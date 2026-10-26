@@ -43,6 +43,8 @@ For each one, it proposes the deepening that fixes it.
 
 Each candidate is a card with the files involved, the friction, a plain-English solution, the benefit in terms of **locality** and **leverage**, a before/after diagram, and a strength badge.
 
+The report opens in your browser's preferred light or dark colour scheme, including its diagrams. Reload it after changing that preference to update the diagrams.
+
 | Badge | What it means for you |
 | --- | --- |
 | `Strong` | The deletion test passes clearly and the friction is real. Take these seriously. |

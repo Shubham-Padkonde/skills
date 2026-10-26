@@ -10,10 +10,19 @@ The architectural review is rendered as a single self-contained HTML file in the
   <head>
     <meta charset="utf-8" />
     <title>Architecture review for {{repo name}}</title>
+    <style>
+      /* Set the canvas before either CDN loads, including before body exists. */
+      html { color-scheme: light dark; background: #fafaf9; color: #0f172a; }
+      body { background: inherit; color: inherit; }
+      @media (prefers-color-scheme: dark) {
+        html { background: #0b1120; color: #cbd5e1; }
+      }
+    </style>
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="module">
       import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
-      mermaid.initialize({ startOnLoad: true, theme: "neutral", securityLevel: "loose" });
+      const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      mermaid.initialize({ startOnLoad: true, theme: dark ? "dark" : "neutral", securityLevel: "loose" });
     </script>
     <style>
       /* small custom layer for things Tailwind doesn't cover cleanly:
@@ -23,7 +32,7 @@ The architectural review is rendered as a single self-contained HTML file in the
       .deep { background: linear-gradient(135deg, #0f172a, #1e293b); }
     </style>
   </head>
-  <body class="bg-stone-50 text-slate-900 font-sans">
+  <body class="font-sans">
     <main class="max-w-5xl mx-auto px-6 py-12 space-y-12">
       <header>...</header>
       <section id="candidates" class="space-y-10">...</section>
@@ -63,7 +72,7 @@ Pick the pattern that fits the candidate. Mix them. Don't make every diagram loo
 Use a Mermaid `flowchart` or `graph` when the point is "X calls Y calls Z, and look at the mess." Wrap it in a Tailwind-styled card so it doesn't feel parachuted in. Style with classDef to colour leakage edges red and the deep module dark. Sequence diagrams work well for "before: 6 round-trips; after: 1."
 
 ```html
-<div class="rounded-lg border border-slate-200 bg-white p-4">
+<div class="rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
   <pre class="mermaid">
     flowchart LR
       A[OrderHandler] --> B[OrderValidator]
@@ -93,6 +102,8 @@ Before: a tree of function calls rendered as nested boxes. After: the same tree 
 
 ## Style guidance
 
+- Follow the browser's light or dark colour preference. Keep the inline canvas styles before the CDN scripts so a slow connection cannot flash a white page in dark mode. Mermaid picks its theme when the report opens; reload after changing the preference to update the diagrams.
+- Give cards, badges, warning callouts, and custom diagrams readable colours in both schemes. Pair light Tailwind backgrounds, borders, and text with `dark:` variants; Tailwind's default dark mode uses the same media query. Check text and arrow contrast on both backgrounds.
 - Lean editorial, not corporate-dashboard. Generous whitespace. Serif optional for headings (`font-serif` works well with stone/slate).
 - Colour sparingly: one accent (emerald or indigo) plus red for leakage and amber for warnings.
 - Keep diagrams ~320px tall so before/after sits comfortably side by side without scrolling.
